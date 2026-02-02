@@ -1,0 +1,27 @@
+{
+  "name": "voz",
+  "version": "1.0.0",
+  "description": "CLI for Text-to-Speech using ElevenLabs - designed for humans and AI agents",
+  "type": "module",
+  "bin": {
+    "voz": "./src/cli.mjs"
+  },
+  "scripts": {
+    "start": "node src/cli.mjs"
+  },
+  "keywords": [
+    "tts",
+    "text-to-speech",
+    "elevenlabs",
+    "cli",
+    "voice",
+    "ai-agents"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@elevenlabs/elevenlabs-js": "^2.34.0",
+    "commander": "^12.0.0",
+    "dotenv": "^16.4.0"
+  }
+}
