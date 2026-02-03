@@ -12,7 +12,8 @@ Or run directly:
 
 ```bash
 npm install
-node src/cli.mjs
+npm run build
+node dist/cli.js
 ```
 
 ## Setup

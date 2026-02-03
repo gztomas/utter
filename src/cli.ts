@@ -77,6 +77,8 @@ Agent Integration:
 Environment Variables:
   ELEVENLABS_API_KEY    Your ElevenLabs API key
   UTTER_DEFAULT_VOICE   Default voice ID to use
+
+Get your API key at: https://elevenlabs.io/app/settings/api-keys
 `
 );
 
