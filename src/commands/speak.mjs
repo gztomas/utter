@@ -29,9 +29,9 @@ export async function speakCommand(textArgs, options) {
     console.error("Error: No text provided.");
     console.error("");
     console.error("Usage:");
-    console.error("  voz speak 'Hello world'");
-    console.error("  voz speak --file input.txt");
-    console.error("  echo 'Hello' | voz speak");
+    console.error("  utter me 'Hello world'");
+    console.error("  utter me --file input.txt");
+    console.error("  echo 'Hello' | utter me");
     process.exit(1);
   }
 

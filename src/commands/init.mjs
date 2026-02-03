@@ -17,7 +17,7 @@ function prompt(question) {
 }
 
 export async function initCommand(options) {
-  console.log("Voz - ElevenLabs TTS CLI Setup");
+  console.log("Utter - ElevenLabs TTS CLI Setup");
   console.log("==============================");
   console.log("");
 
@@ -57,8 +57,8 @@ export async function initCommand(options) {
   console.log(`Configuration saved to: ${CONFIG_FILE}`);
   console.log("");
   console.log("You're all set! Try these commands:");
-  console.log("  voz voices              - List available voices");
-  console.log("  voz speak 'Hello!'      - Speak text aloud");
-  console.log("  voz speak -o out.mp3    - Save to file");
+  console.log("  utter voices            - List available voices");
+  console.log("  utter me 'Hello!'       - Speak text aloud");
+  console.log("  utter to out.mp3 'Hi'   - Save to file");
   console.log("");
 }

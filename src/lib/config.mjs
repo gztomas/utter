@@ -3,7 +3,7 @@ import { existsSync } from "fs";
 import { join } from "path";
 import { homedir } from "os";
 
-const CONFIG_DIR = join(homedir(), ".voz");
+const CONFIG_DIR = join(homedir(), ".utter");
 const CONFIG_FILE = join(CONFIG_DIR, "config.json");
 
 const defaultConfig = {
@@ -23,7 +23,7 @@ export async function loadConfig() {
 
   // First check environment variables
   const envApiKey = process.env.ELEVENLABS_API_KEY;
-  const envVoice = process.env.VOZ_DEFAULT_VOICE;
+  const envVoice = process.env.UTTER_DEFAULT_VOICE;
 
   let fileConfig = { ...defaultConfig };
 
@@ -63,7 +63,7 @@ export async function requireApiKey() {
     console.error("Error: No API key configured.");
     console.error("");
     console.error("Set up your API key using one of these methods:");
-    console.error("  1. Run: voz init");
+    console.error("  1. Run: utter init");
     console.error("  2. Set environment variable: ELEVENLABS_API_KEY=your_key");
     console.error("  3. Create a .env file with ELEVENLABS_API_KEY=your_key");
     console.error("");

@@ -70,7 +70,7 @@ export async function voicesCommand(options) {
 
   console.log(`Total: ${voices.length} voices`);
   console.log("");
-  console.log("Set a default voice with: voz voices --set-default <voice-id>");
+  console.log("Set a default voice with: utter voices --set-default <voice-id>");
 }
 
 async function setDefaultVoice(apiKey, voiceId) {
@@ -81,7 +81,7 @@ async function setDefaultVoice(apiKey, voiceId) {
     console.log(`Default voice set to: ${voice.name} (${voice.voiceId})`);
   } catch (error) {
     console.error(`Error: Voice "${voiceId}" not found.`);
-    console.error("Run 'voz voices' to see available voices.");
+    console.error("Run 'utter voices' to see available voices.");
     process.exit(1);
   }
 }
