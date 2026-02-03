@@ -1,7 +1,13 @@
-import { requireApiKey, loadConfig, saveConfig } from "../lib/config.mjs";
-import { listVoices, getVoice } from "../lib/client.mjs";
+import { requireApiKey, loadConfig, saveConfig } from "../lib/config.js";
+import { listVoices, getVoice } from "../lib/client.js";
+import type { ElevenLabs } from "@elevenlabs/elevenlabs-js";
 
-export async function voicesCommand(options) {
+export interface VoicesOptions {
+  json?: boolean;
+  setDefault?: string;
+}
+
+export async function voicesCommand(options: VoicesOptions): Promise<void> {
   const apiKey = await requireApiKey();
 
   if (options.setDefault) {
@@ -20,15 +26,14 @@ export async function voicesCommand(options) {
     return;
   }
 
-  // Group by category
   const premade = voices.filter((v) => v.category === "premade");
   const cloned = voices.filter((v) => v.category === "cloned");
   const generated = voices.filter((v) => v.category === "generated");
   const other = voices.filter(
-    (v) => !["premade", "cloned", "generated"].includes(v.category)
+    (v) => !["premade", "cloned", "generated"].includes(v.category || "")
   );
 
-  const printVoice = (voice) => {
+  const printVoice = (voice: ElevenLabs.Voice): void => {
     const isDefault = config.defaultVoice === voice.voiceId;
     const defaultMark = isDefault ? " (default)" : "";
     const labels = voice.labels || {};
@@ -73,13 +78,12 @@ export async function voicesCommand(options) {
   console.log("Set a default voice with: utter voices --set-default <voice-id>");
 }
 
-async function setDefaultVoice(apiKey, voiceId) {
+async function setDefaultVoice(apiKey: string, voiceId: string): Promise<void> {
   try {
-    // Validate the voice exists
     const voice = await getVoice(apiKey, voiceId);
     await saveConfig({ defaultVoice: voice.voiceId });
     console.log(`Default voice set to: ${voice.name} (${voice.voiceId})`);
-  } catch (error) {
+  } catch {
     console.error(`Error: Voice "${voiceId}" not found.`);
     console.error("Run 'utter voices' to see available voices.");
     process.exit(1);

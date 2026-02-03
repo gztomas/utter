@@ -1,8 +1,8 @@
-import { saveConfig, CONFIG_FILE } from "../lib/config.mjs";
-import { getClient } from "../lib/client.mjs";
+import { saveConfig, CONFIG_FILE } from "../lib/config.js";
+import { getClient } from "../lib/client.js";
 import * as readline from "readline";
 
-function prompt(question) {
+function prompt(question: string): Promise<string> {
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
@@ -16,7 +16,11 @@ function prompt(question) {
   });
 }
 
-export async function initCommand(options) {
+export interface InitOptions {
+  apiKey?: string;
+}
+
+export async function initCommand(options: InitOptions): Promise<void> {
   console.log("Utter - ElevenLabs TTS CLI Setup");
   console.log("==============================");
   console.log("");
@@ -36,7 +40,6 @@ export async function initCommand(options) {
 
   apiKey = apiKey.trim();
 
-  // Validate the API key by making a test request
   console.log("");
   console.log("Validating API key...");
 
@@ -46,11 +49,10 @@ export async function initCommand(options) {
     console.log(`Success! Found ${voices.voices?.length || 0} voices available.`);
   } catch (error) {
     console.error("Error: Invalid API key or connection failed.");
-    console.error(error.message);
+    console.error((error as Error).message);
     process.exit(1);
   }
 
-  // Save the config
   await saveConfig({ apiKey });
 
   console.log("");

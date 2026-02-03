@@ -2,11 +2,10 @@
 
 import { Command } from "commander";
 import { config as loadEnv } from "dotenv";
-import { initCommand } from "./commands/init.mjs";
-import { voicesCommand } from "./commands/voices.mjs";
-import { speakCommand } from "./commands/speak.mjs";
+import { initCommand } from "./commands/init.js";
+import { voicesCommand } from "./commands/voices.js";
+import { speakCommand } from "./commands/speak.js";
 
-// Load .env file if present
 loadEnv();
 
 const program = new Command();
@@ -16,14 +15,12 @@ program
   .description("Text-to-Speech CLI using ElevenLabs - designed for humans and AI agents")
   .version("1.0.0");
 
-// Init command
 program
   .command("init")
   .description("Initialize utter with your ElevenLabs API key")
   .option("-k, --api-key <key>", "API key (or enter interactively)")
   .action(initCommand);
 
-// Voices command
 program
   .command("voices")
   .description("List available voices")
@@ -31,7 +28,6 @@ program
   .option("--set-default <voice-id>", "Set the default voice")
   .action(voicesCommand);
 
-// "me" command - speak text aloud
 program
   .command("me")
   .description("Speak text aloud")
@@ -41,9 +37,8 @@ program
   .option("-m, --model <model>", "Model ID (default: eleven_multilingual_v2)")
   .option("-s, --stream", "Stream audio chunks as they're ready (for long text)")
   .option("-q, --quiet", "Suppress progress output")
-  .action((text, options) => speakCommand(text, { ...options, output: undefined }));
+  .action((text: string[], options) => speakCommand(text, { ...options, output: undefined }));
 
-// "to" command - save speech to file
 program
   .command("to")
   .description("Save speech to audio file")
@@ -53,15 +48,13 @@ program
   .option("-v, --voice <voice>", "Voice ID or name to use")
   .option("-m, --model <model>", "Model ID (default: eleven_multilingual_v2)")
   .option("-q, --quiet", "Suppress progress output")
-  .action((output, text, options) => speakCommand(text, { ...options, output }));
+  .action((output: string, text: string[], options) => speakCommand(text, { ...options, output }));
 
-// Default action - show help
 program
   .action(() => {
     program.help();
   });
 
-// Help examples for agents
 program.addHelpText(
   "after",
   `

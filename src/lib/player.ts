@@ -6,7 +6,7 @@ import { promisify } from "util";
 
 const execAsync = promisify(exec);
 
-export async function playAudio(buffer) {
+export async function playAudio(buffer: Buffer): Promise<void> {
   const tmpFile = join(tmpdir(), `utter-${Date.now()}.mp3`);
   await writeFile(tmpFile, buffer);
 
@@ -37,6 +37,6 @@ export async function playAudio(buffer) {
   }
 }
 
-export async function saveAudio(buffer, outputPath) {
+export async function saveAudio(buffer: Buffer, outputPath: string): Promise<void> {
   await writeFile(outputPath, buffer);
 }

@@ -1,26 +1,32 @@
 import { readFile } from "fs/promises";
-import { requireApiKey, loadConfig } from "../lib/config.mjs";
-import { textToSpeech, splitTextIntoChunks, listVoices } from "../lib/client.mjs";
-import { playAudio, saveAudio } from "../lib/player.mjs";
+import { requireApiKey, loadConfig } from "../lib/config.js";
+import { textToSpeech, splitTextIntoChunks, listVoices } from "../lib/client.js";
+import { playAudio, saveAudio } from "../lib/player.js";
 
-// Default voice if none configured
 const FALLBACK_VOICE = "cgSgspJ2msm6clMCkdW9";
 
-export async function speakCommand(textArgs, options) {
+export interface SpeakOptions {
+  file?: string;
+  voice?: string;
+  model?: string;
+  stream?: boolean;
+  quiet?: boolean;
+  output?: string;
+}
+
+export async function speakCommand(textArgs: string[], options: SpeakOptions): Promise<void> {
   const apiKey = await requireApiKey();
   const config = await loadConfig();
 
-  // Get text from arguments or file
-  let text;
+  let text: string | undefined;
   if (options.file) {
     text = await readFile(options.file, "utf-8");
   } else if (textArgs.length > 0) {
     text = textArgs.join(" ");
   } else if (!process.stdin.isTTY) {
-    // Read from stdin
-    const chunks = [];
+    const chunks: Buffer[] = [];
     for await (const chunk of process.stdin) {
-      chunks.push(chunk);
+      chunks.push(chunk as Buffer);
     }
     text = Buffer.concat(chunks).toString("utf-8");
   }
@@ -37,23 +43,20 @@ export async function speakCommand(textArgs, options) {
 
   text = text.trim();
 
-  // Resolve voice
   let voiceId = options.voice || config.defaultVoice || FALLBACK_VOICE;
 
-  // If voice is a name instead of ID, try to resolve it
   if (voiceId && !voiceId.match(/^[a-zA-Z0-9]{20,}$/)) {
     const voices = await listVoices(apiKey);
     const match = voices.find(
-      (v) => v.name.toLowerCase().includes(voiceId.toLowerCase())
+      (v) => v.name?.toLowerCase().includes(voiceId!.toLowerCase())
     );
-    if (match) {
+    if (match && match.voiceId) {
       voiceId = match.voiceId;
     }
   }
 
   const modelId = options.model || config.defaultModel || "eleven_multilingual_v2";
 
-  // Split long text into chunks
   const chunks = splitTextIntoChunks(text);
   const isLong = chunks.length > 1;
 
@@ -61,7 +64,7 @@ export async function speakCommand(textArgs, options) {
     console.log(`Text split into ${chunks.length} parts`);
   }
 
-  const allBuffers = [];
+  const allBuffers: Buffer[] = [];
 
   for (let i = 0; i < chunks.length; i++) {
     if (isLong && !options.quiet) {
@@ -71,7 +74,6 @@ export async function speakCommand(textArgs, options) {
     const buffer = await textToSpeech(apiKey, chunks[i], voiceId, modelId);
     allBuffers.push(buffer);
 
-    // If playing (not saving) and streaming, play each chunk
     if (!options.output && options.stream) {
       await playAudio(buffer);
     }
@@ -79,18 +81,12 @@ export async function speakCommand(textArgs, options) {
 
   const combinedBuffer = Buffer.concat(allBuffers);
 
-  // Output or play
   if (options.output) {
     await saveAudio(combinedBuffer, options.output);
     if (!options.quiet) {
       console.log(`Saved to: ${options.output}`);
     }
   } else if (!options.stream) {
-    // Play all at once (default behavior)
     await playAudio(combinedBuffer);
-  }
-
-  if (!options.quiet && !options.output) {
-    // Nothing to print, audio played
   }
 }

@@ -3,29 +3,34 @@ import { existsSync } from "fs";
 import { join } from "path";
 import { homedir } from "os";
 
-const CONFIG_DIR = join(homedir(), ".utter");
-const CONFIG_FILE = join(CONFIG_DIR, "config.json");
+export const CONFIG_DIR = join(homedir(), ".utter");
+export const CONFIG_FILE = join(CONFIG_DIR, "config.json");
 
-const defaultConfig = {
+export interface Config {
+  apiKey: string | null;
+  defaultVoice: string | null;
+  defaultModel: string;
+}
+
+const defaultConfig: Config = {
   apiKey: null,
   defaultVoice: null,
   defaultModel: "eleven_multilingual_v2",
 };
 
-export async function ensureConfigDir() {
+export async function ensureConfigDir(): Promise<void> {
   if (!existsSync(CONFIG_DIR)) {
     await mkdir(CONFIG_DIR, { recursive: true });
   }
 }
 
-export async function loadConfig() {
+export async function loadConfig(): Promise<Config> {
   await ensureConfigDir();
 
-  // First check environment variables
   const envApiKey = process.env.ELEVENLABS_API_KEY;
   const envVoice = process.env.UTTER_DEFAULT_VOICE;
 
-  let fileConfig = { ...defaultConfig };
+  let fileConfig: Config = { ...defaultConfig };
 
   if (existsSync(CONFIG_FILE)) {
     try {
@@ -36,7 +41,6 @@ export async function loadConfig() {
     }
   }
 
-  // Environment variables take precedence
   return {
     ...fileConfig,
     apiKey: envApiKey || fileConfig.apiKey,
@@ -44,7 +48,7 @@ export async function loadConfig() {
   };
 }
 
-export async function saveConfig(config) {
+export async function saveConfig(config: Partial<Config>): Promise<Config> {
   await ensureConfigDir();
   const current = await loadConfig();
   const merged = { ...current, ...config };
@@ -52,12 +56,12 @@ export async function saveConfig(config) {
   return merged;
 }
 
-export async function getApiKey() {
+export async function getApiKey(): Promise<string | null> {
   const config = await loadConfig();
   return config.apiKey;
 }
 
-export async function requireApiKey() {
+export async function requireApiKey(): Promise<string> {
   const apiKey = await getApiKey();
   if (!apiKey) {
     console.error("Error: No API key configured.");
@@ -67,10 +71,10 @@ export async function requireApiKey() {
     console.error("  2. Set environment variable: ELEVENLABS_API_KEY=your_key");
     console.error("  3. Create a .env file with ELEVENLABS_API_KEY=your_key");
     console.error("");
-    console.error("Get your API key at: https://elevenlabs.io/app/settings/api-keys");
+    console.error(
+      "Get your API key at: https://elevenlabs.io/app/settings/api-keys"
+    );
     process.exit(1);
   }
   return apiKey;
 }
-
-export { CONFIG_DIR, CONFIG_FILE };
