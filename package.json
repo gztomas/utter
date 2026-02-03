@@ -1,10 +1,10 @@
 {
-  "name": "voz",
+  "name": "utter",
   "version": "1.0.0",
   "description": "CLI for Text-to-Speech using ElevenLabs - designed for humans and AI agents",
   "type": "module",
   "bin": {
-    "voz": "./src/cli.mjs"
+    "utter": "./src/cli.mjs"
   },
   "scripts": {
     "start": "node src/cli.mjs"
