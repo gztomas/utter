@@ -2,18 +2,21 @@
 
 A Text-to-Speech CLI using ElevenLabs, designed for humans and AI agents.
 
+Give your AI agent a voice. Utter converts text to speech from the terminal — use it manually, let your agent call it as a tool, or wire it up as a hook so every response is spoken aloud automatically.
+
 ## Installation
 
 ```bash
-npm install -g .
+npm install -g utter-cli
 ```
 
-Or run directly:
+Or install from source:
 
 ```bash
-npm install
-npm run build
-node dist/cli.js
+git clone https://github.com/gztomas/utter.git
+cd utter
+npm install && npm run build
+npm install -g .
 ```
 
 ## Setup
@@ -103,27 +106,46 @@ utter voices --set-default <voice-id>
 | `--json` | Output as JSON |
 | `--set-default <id>` | Set the default voice |
 
-## Agent Integration
+## Use with AI agents
 
-Utter is designed to work seamlessly with AI agents:
+There are two ways to give your AI agent a voice with Utter:
 
-- Use `--json` flag for machine-readable output
-- Use `--quiet` flag to suppress progress messages
-- Exit codes: `0` = success, `1` = error
-- Supports stdin for piping text
+### 1. Tell your agent to use it
 
-Example agent usage:
+Add an instruction to your agent's system prompt (or a `CLAUDE.md` / rules file) telling it to speak its replies:
 
-```bash
-# Get voices as JSON
-utter voices --json
+> Every time you reply, run `utter me --quiet "<your reply>"` so the user hears it.
 
-# Speak quietly (no progress output)
-utter me --quiet "Task completed successfully"
+The agent will call the command as a tool on each response.
 
-# Save audio file
-utter to notification.mp3 --quiet "New message received"
+### 2. Set up a hook (automatic)
+
+With Claude Code, you can add a hook that automatically speaks every response — no agent instructions needed. Add this to your `.claude/settings.json`:
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "utter me --quiet \"$CLAUDE_TOOL_RESULT\""
+          }
+        ]
+      }
+    ]
+  }
+}
 ```
+
+### Tips for agent usage
+
+- Use `--quiet` to suppress progress output and keep the agent's context clean
+- Use `--json` with `utter voices` for machine-readable voice lists
+- Pipe text via stdin: `echo "Hello" | utter me --quiet`
+- Exit codes: `0` = success, `1` = error
 
 ## Configuration
 

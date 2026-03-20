@@ -1,15 +1,23 @@
 {
-  "name": "utter",
+  "name": "utter-cli",
   "version": "1.0.0",
   "description": "CLI for Text-to-Speech using ElevenLabs - designed for humans and AI agents",
   "type": "module",
   "bin": {
     "utter": "./dist/cli.js"
   },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gztomas/utter.git"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "start": "node dist/cli.js"
+    "start": "node dist/cli.js",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "tts",
